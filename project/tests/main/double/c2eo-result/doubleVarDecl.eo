@@ -1,0 +1,73 @@
++package c2eo.src.main.double.doubleVarDecl
++alias c2eo.coperators.add
++alias c2eo.system.address
++alias c2eo.coperators.plug
++alias c2eo.stdio.printf
++alias c2eo.system.ram
++alias c2eo.coperators.read-as-float64
++alias c2eo.coperators.write
+
+[args...] > global
+  ram > global-ram
+    2048
+  memory > empty-global-position
+  ram > return-ram
+    2048
+  memory > return-mem_size
+  address > return
+    return-ram
+    0
+  address > g-d01
+    global-ram
+    0
+  address > g-d02
+    global-ram
+    8
+  address > g-d03
+    global-ram
+    16
+  address > s-d04
+    global-ram
+    24
+  [param-start param-size] > main
+    add > local-start
+      param-start
+      param-size
+    add > empty-local-position
+      local-start
+      0
+    seq > @
+      printf
+        "%f\n"
+        read-as-float64
+          g-d01
+      printf
+        "%f\n"
+        read-as-float64
+          g-d02
+      printf
+        "%f\n"
+        read-as-float64
+          g-d03
+      printf
+        "%f\n"
+        read-as-float64
+          s-d04
+      TRUE
+  seq > @
+    write
+      g-d01
+      plug
+    write
+      g-d02
+      8.000000
+    write
+      g-d03
+      3.140000
+    write
+      s-d04
+      3.140000
+    main
+      32
+      0
+    TRUE

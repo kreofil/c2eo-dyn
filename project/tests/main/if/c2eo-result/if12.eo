@@ -1,0 +1,104 @@
++package c2eo.src.main.if.if12
++alias c2eo.coperators.add
++alias c2eo.system.address
++alias c2eo.coperators.greater
++alias c2eo.coperators.if
++alias c2eo.stdio.printf
++alias c2eo.system.ram
++alias c2eo.coperators.read-as-int64
++alias c2eo.coperators.write
++alias c2eo.coperators.write-as-int64
+
+[args...] > global
+  ram > global-ram
+    2048
+  memory > empty-global-position
+  ram > return-ram
+    2048
+  memory > return-mem_size
+  address > return
+    return-ram
+    0
+  address > g-x
+    global-ram
+    0
+  address > g-y
+    global-ram
+    8
+  address > g-z
+    global-ram
+    16
+  address > g-r
+    global-ram
+    24
+  [param-start param-size] > main
+    add > local-start
+      param-start
+      param-size
+    add > empty-local-position
+      local-start
+      0
+    seq > @
+      if
+        greater
+          read-as-int64
+            g-x
+          read-as-int64
+            g-y
+        seq
+          if
+            greater
+              read-as-int64
+                g-x
+              read-as-int64
+                g-z
+            write-as-int64
+              g-r
+              read-as-int64
+                g-x
+            write-as-int64
+              g-r
+              read-as-int64
+                g-z
+          TRUE
+        seq
+          if
+            greater
+              read-as-int64
+                g-y
+              read-as-int64
+                g-z
+            write-as-int64
+              g-r
+              read-as-int64
+                g-y
+            write-as-int64
+              g-r
+              read-as-int64
+                g-z
+          TRUE
+      printf
+        "%d\n"
+        read-as-int64
+          g-r
+      write
+        return
+        0
+      TRUE
+  seq > @
+    write
+      g-x
+      3
+    write
+      g-y
+      1
+    write
+      g-z
+      1
+    write
+      g-r
+      0
+    main
+      32
+      0
+    TRUE

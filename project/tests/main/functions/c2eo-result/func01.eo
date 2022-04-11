@@ -1,0 +1,6 @@
++package c2eo.src.main.functions.func01
+
++alias c2eo.stdio.printf
+
+[args...] > global
+  printf "Segfault exception at address 0x563d2dc626b4 while tool run" > @

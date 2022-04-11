@@ -1,0 +1,60 @@
++package c2eo.src.main.incdec.post_dec_int64
++alias c2eo.coperators.add
++alias c2eo.system.address
++alias c2eo.coperators.post-dec-int64
++alias c2eo.stdio.printf
++alias c2eo.system.ram
++alias c2eo.coperators.read-as-int64
++alias c2eo.coperators.write
+
+[args...] > global
+  ram > global-ram
+    2048
+  memory > empty-global-position
+  ram > return-ram
+    2048
+  memory > return-mem_size
+  address > return
+    return-ram
+    0
+  address > g-c
+    global-ram
+    0
+  address > g-d
+    global-ram
+    8
+  address > g-e
+    global-ram
+    16
+  [param-start param-size] > main
+    add > local-start
+      param-start
+      param-size
+    add > empty-local-position
+      local-start
+      0
+    seq > @
+      post-dec-int64
+        g-c
+      printf
+        "%d\n"
+        read-as-int64
+          g-c
+      write
+        return
+        0
+      TRUE
+  seq > @
+    write
+      g-c
+      10
+    write
+      g-d
+      255.000000
+    write
+      g-e
+      'z'
+    main
+      17
+      0
+    TRUE

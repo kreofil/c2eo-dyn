@@ -1,0 +1,101 @@
++package c2eo.src.main.pointers.pointers02
++alias c2eo.coperators.add
++alias c2eo.coperators.addr-of
++alias c2eo.system.address
++alias c2eo.stdio.printf
++alias c2eo.system.ram
++alias c2eo.coperators.read-as-int64
++alias c2eo.coperators.read-as-ptr
++alias c2eo.coperators.write
++alias c2eo.coperators.write-as-int64
++alias c2eo.coperators.write-as-ptr
+
+[args...] > global
+  ram > global-ram
+    2048
+  memory > empty-global-position
+  ram > return-ram
+    2048
+  memory > return-mem_size
+  address > return
+    return-ram
+    0
+  address > g-c
+    global-ram
+    0
+  address > g-d
+    global-ram
+    8
+  address > g-pc
+    global-ram
+    16
+  address > g-pd
+    global-ram
+    24
+  address > g-ppc
+    global-ram
+    32
+  address > g-ppd
+    global-ram
+    40
+  [param-start param-size] > main
+    add > local-start
+      param-start
+      param-size
+    add > empty-local-position
+      local-start
+      0
+    seq > @
+      write-as-ptr
+        g-pc
+        addr-of
+          g-d
+      write-as-ptr
+        g-ppc
+        addr-of
+          g-pc
+      write-as-int64
+        g-c
+        read-as-int64
+          address
+            global-ram
+            read-as-ptr
+              address
+                global-ram
+                read-as-ptr
+                  g-ppc
+      printf
+        "%d\n"
+        read-as-int64
+          g-c
+      printf
+        "%d\n"
+        read-as-int64
+          g-d
+      write
+        return
+        0
+      TRUE
+  seq > @
+    write
+      g-c
+      10
+    write
+      g-d
+      255
+    write
+      g-pc
+      0
+    write
+      g-pd
+      0
+    write
+      g-ppc
+      0
+    write
+      g-ppd
+      0
+    main
+      48
+      0
+    TRUE

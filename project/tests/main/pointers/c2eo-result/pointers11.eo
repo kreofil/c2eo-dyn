@@ -1,0 +1,6 @@
++package c2eo.src.main.pointers.pointers11
+
++alias c2eo.stdio.printf
+
+[args...] > global
+  printf "Segfault exception at address 0 while tool run" > @

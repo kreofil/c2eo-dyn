@@ -1,0 +1,117 @@
++package c2eo.src.main.functions.func05
++alias c2eo.coperators.add
++alias c2eo.system.address
++alias c2eo.coperators.mul
++alias c2eo.stdio.printf
++alias c2eo.system.ram
++alias c2eo.coperators.read-as-int64
++alias c2eo.coperators.sub
++alias c2eo.coperators.write
++alias c2eo.coperators.write-as-int64
+
+[args...] > global
+  ram > global-ram
+    2048
+  memory > empty-global-position
+  ram > return-ram
+    2048
+  memory > return-mem_size
+  address > return
+    return-ram
+    0
+  address > g-c
+    global-ram
+    0
+  [param-start param-size] > f-func1
+    add > local-start
+      param-start
+      param-size
+    add > empty-local-position
+      local-start
+      0
+    address > p-x
+      global-ram
+      add
+        param-start
+        0
+    address > p-y
+      global-ram
+      add
+        param-start
+        8
+    address > p-z
+      global-ram
+      add
+        param-start
+        16
+    seq > @
+      write
+        return
+        sub
+          read-as-int64
+            p-x
+          mul
+            read-as-int64
+              p-y
+            read-as-int64
+              p-z
+      TRUE
+  [param-start param-size] > main
+    add > local-start
+      param-start
+      param-size
+    add > empty-local-position
+      local-start
+      8
+    address > l-a
+      global-ram
+      add
+        local-start
+        0
+    seq > @
+      write-as-int64
+        l-a
+        seq
+          write
+            address
+              global-ram
+              add
+                empty-local-position
+                0
+            read-as-int64
+              g-c
+          write
+            address
+              global-ram
+              add
+                empty-local-position
+                8
+            5
+          write
+            address
+              global-ram
+              add
+                empty-local-position
+                16
+            10
+          ^.f-func1
+            empty-local-position
+            24
+          read-as-int64
+            return
+      printf
+        "%d\n"
+        read-as-int64
+          l-a
+      write
+        return
+        0
+      TRUE
+  seq > @
+    write
+      g-c
+      10
+    main
+      8
+      0
+    TRUE
