@@ -1,6 +1,0 @@
-+package c2eo.src.main.uno_plus_minus.plus04
-
-+alias c2eo.stdio.printf
-
-[args...] > global
-  printf "Segfault exception at address 0x5651ad2f14b1 while tool run" > @

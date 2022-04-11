@@ -1,5 +1,0 @@
-+package c2eo.src.main.fibonacci.fibo_while_glob
-+alias org.eolang.io.stdout
-
-[args...] > global
-  stdout "exception: empty EO file generated\n" > @

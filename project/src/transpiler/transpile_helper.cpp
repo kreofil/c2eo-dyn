@@ -462,8 +462,11 @@ EOObject* GetUnaryStmtEOObject(const UnaryOperator *p_operator) {
 }
 
 EOObject* GetAssignmentOperatorEOObject(const BinaryOperator *p_operator) {
-  EOObject* binop = new EOObject{"write-as-"};
+  std::string postfix = GetTypeName(p_operator->getType());
+  EOObject* binop = new EOObject{"write-as-" + postfix};
+/*
   const auto *op = dyn_cast<DeclRefExpr>(p_operator->getLHS());
+  // Здесь нужны проверки на разные типы левого выражения. Не только DeclRefExpr
   if (op) {
     try {
       string type = op->getType()->isPointerType() ? "ptr" : GetTypeName(op->getType());
@@ -477,7 +480,8 @@ EOObject* GetAssignmentOperatorEOObject(const BinaryOperator *p_operator) {
   } else {
     binop->nested.emplace_back(new EOObject{EOObjectType::EO_EMPTY});
   }
-
+*/
+  binop->nested.push_back(GetStmtEOObject(p_operator->getLHS()));
   binop->nested.push_back(GetStmtEOObject(p_operator->getRHS()));
   return binop;
 }
