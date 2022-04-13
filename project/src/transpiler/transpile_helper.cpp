@@ -156,7 +156,9 @@ EOObject* GetStmtEOObject(const clang::Stmt* p_stmt)
 {
   Stmt::StmtClass stmtClass = p_stmt->getStmtClass();
   //! Trace out of Statement Class
+  //p_stmt->dump();
   #ifdef TRACEOUT
+    p_stmt->dump();
     TraceOutASTnode(stmtClass);
   #endif
   if (stmtClass == Stmt::BinaryOperatorClass) {
@@ -264,7 +266,7 @@ EOObject* GetFunctionCallEOObject(const CallExpr *op) {
 
   //!
 //   #ifdef TRACEOUT_EO
-//     TraceOutEOObject(call);
+//      TraceOutEOObject(*call);
 //   #endif
   return call;
 }
@@ -283,7 +285,17 @@ EOObject* GetIntegerLiteralEOObject(const IntegerLiteral *p_literal) {
   #ifdef TRACEOUT
     TraceOutIntegerLiteral(an_int, is_signed);
   #endif
-  return new EOObject{an_int.toString(10, is_signed), EOObjectType::EO_LITERAL};
+  // Формирование строкового значения для целого числа
+  int64_t val = 0;
+  if(is_signed) {
+    val = an_int.getSExtValue();
+  }
+  else {
+    val = an_int.getZExtValue();
+  }
+  std::string strVal{std::to_string(val)};
+  return new EOObject{strVal, EOObjectType::EO_LITERAL};
+//   return new EOObject{an_int.toString(10, is_signed), EOObjectType::EO_LITERAL};
 }
 
 EOObject* GetCompoundAssignEOObject(const CompoundAssignOperator *p_operator) {
@@ -345,6 +357,7 @@ EOObject* GetBinaryStmtEOObject(const BinaryOperator *p_operator) {
   if (opCode == BinaryOperatorKind::BO_Assign) {
     return GetAssignmentOperatorEOObject(p_operator);
   } else if (opCode == BinaryOperatorKind::BO_Add) {
+    // Усложняется, так как нужно еще учесть указатель
     operation = "add";
   } else if (opCode == BinaryOperatorKind::BO_Sub) {
     operation = "sub";

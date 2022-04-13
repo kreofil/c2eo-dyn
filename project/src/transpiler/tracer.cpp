@@ -57,8 +57,16 @@ void TraceOutBinaryOperator(BinaryOperatorKind kind) {
 
 // Тестовый вывод информации о целочисленных литералах
 void TraceOutIntegerLiteral(APInt &v, bool is_signed) {
-  std::string message{v.toString(10, is_signed)};
-  std::cout << "    APInt Literal = " << message << "\n";
+//   std::string message{v.toString(10, is_signed)};
+//   toString(message, 10, true);
+  int64_t val = 0;
+  if(is_signed) {
+    val = v.getSExtValue();
+  }
+  else {
+    val = v.getZExtValue();
+  }
+  std::cout << "    APInt Literal = " << val << "\n";
 }
 
 // Тестовый вывод объекта EO
