@@ -9,7 +9,7 @@
 
 class UnitTranspiler {
 public:
-  UnitTranspiler() = default;
+  UnitTranspiler(): tmp{""}{}; // = default;
 
   MemoryManager glob{"global-ram"}, ret{"return-ram"};
   FunctionManager func_manager;
@@ -29,8 +29,8 @@ private:
   std::vector<EOObject*> objects;
 
   void GenerateResult();
-
-
+  void GetResult(std::ostream &os);
+  void ResultToString();
 };
 
 

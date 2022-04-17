@@ -73,3 +73,46 @@ void TraceOutIntegerLiteral(APInt &v, bool is_signed) {
 void TraceOutEOObject(EOObject &eoObject) {
   cout << eoObject;
 }
+
+// Тестовый вывод объекта содержимого функции
+void TraceOutFunctionDecl(const clang::FunctionDecl* FD) {
+  if (FD == nullptr) {
+    std::cout << "  Incorrect pointer to definition\n";
+  }
+  else {
+    // Вывод содержимого функции
+    DeclarationNameInfo declNameInfo{FD->getNameInfo()};
+    std::string func_name{declNameInfo.getAsString()};
+    std::cout << func_name << ": ";
+    std::cout.flush();
+
+    if(FD->isDefined()) {
+      std::cout << "  Defined!\n";
+    }
+    else {
+      std::cout << "  No defined!\n";
+    }
+
+    if(FD->hasBody()) {
+      std::cout << "  Has body!\n";
+      Stmt* body = FD->getBody();
+      CompoundStmt* funcBody = dyn_cast<CompoundStmt>(body);
+      if(funcBody != nullptr) {
+        std::cout << "  Has body! Body pointer =  " << body << "\n";
+        if(funcBody->size() > 0) {
+          int i = 0;
+          for (auto stmt: funcBody->body()) {
+            Stmt::StmtClass stmtClass = stmt->getStmtClass();
+            std::cout << "    Statement # " << i++ << "\n";
+          }
+        }
+        else {
+          std::cout << "    The body is empty\n";
+        }
+      }
+    }
+    else {
+      std::cout << "  Body is absent!\n";
+    }
+  }
+}

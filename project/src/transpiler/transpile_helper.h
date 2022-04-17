@@ -25,5 +25,4 @@ EOObject* GetStmtEOObject(const clang::Stmt *p_stmt);
 
 std::set<std::string> FindAllExternalObjects(const EOObject &obj);
 
-
 #endif // __TRANSPILE_HELPER__

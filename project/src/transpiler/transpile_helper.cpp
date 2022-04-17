@@ -3,6 +3,7 @@
 #include "unit_transpiler.h"
 #include "vardecl.h"
 #include <queue>
+#include <list>
 #include <sstream>
 #include "tracer.h"  // Подключение функций трассировки программы
 
@@ -111,41 +112,43 @@ vector<Variable> ProcessFunctionLocalVariables(const clang::CompoundStmt *CS, si
 // Function to get eo representation of CompoundStmt
 EOObject* GetCompoundStmt(const clang::CompoundStmt *CS, bool is_decorator) {
   EOObject* res = new EOObject{"seq"};
-  if (is_decorator)
+  if (is_decorator) {
     res->postfix = "@";
-  for (auto stmt: CS->body()) {
-    Stmt::StmtClass stmtClass = stmt->getStmtClass();
-    // Костыльное решение для тестового вывода
-    if (stmtClass == Stmt::ImplicitCastExprClass) // Нужно разобраться с именами перечислимых типов
-    {
-      auto ref = dyn_cast<DeclRefExpr>(*stmt->child_begin());
-      if (!ref)
-        continue;
-      try {
-        const Variable &var = transpiler.glob.GetVarByID(dyn_cast<VarDecl>(ref->getFoundDecl()));
-        string formatter = "d";
-        if (var.type_postfix == "float32" || var.type_postfix == "float64")
-          formatter = "f";
-        EOObject* printer = new EOObject{"printf"};
-        printer->nested.emplace_back(new EOObject{"\"%" + formatter + "\\n\"", EOObjectType::EO_LITERAL});
-        EOObject* read_val = new EOObject{"read-as-" + var.type_postfix};
-        read_val->nested.emplace_back(new EOObject{var.alias});
-        printer->nested.push_back(read_val);
-        res->nested.push_back(printer);
-      }
-      catch (invalid_argument &) {
-        res->nested.emplace_back(new EOObject{EOObjectType::EO_PLUG});
-      }
-      continue;
-    }
-    EOObject* stmt_obj = GetStmtEOObject(stmt);
-    res->nested.push_back(stmt_obj);
-    #ifdef TRACEOUT_EO
-      TraceOutEOObject(*stmt_obj);
-    #endif
   }
-  res->nested.emplace_back(new EOObject{"TRUE", EOObjectType::EO_LITERAL});
-  //!
+  if(CS->size() > 0) {
+    for (auto stmt: CS->body()) {
+      Stmt::StmtClass stmtClass = stmt->getStmtClass();
+      // Костыльное решение для тестового вывода
+      if (stmtClass == Stmt::ImplicitCastExprClass) // Нужно разобраться с именами перечислимых типов
+      {
+        auto ref = dyn_cast<DeclRefExpr>(*stmt->child_begin());
+        if (!ref)
+          continue;
+        try {
+          const Variable &var = transpiler.glob.GetVarByID(dyn_cast<VarDecl>(ref->getFoundDecl()));
+          string formatter = "d";
+          if (var.type_postfix == "float32" || var.type_postfix == "float64")
+            formatter = "f";
+          EOObject* printer = new EOObject{"printf"};
+          printer->nested.emplace_back(new EOObject{"\"%" + formatter + "\\n\"", EOObjectType::EO_LITERAL});
+          EOObject* read_val = new EOObject{"read-as-" + var.type_postfix};
+          read_val->nested.emplace_back(new EOObject{var.alias});
+          printer->nested.push_back(read_val);
+          res->nested.push_back(printer);
+        }
+        catch (invalid_argument &) {
+          res->nested.emplace_back(new EOObject{EOObjectType::EO_PLUG});
+        }
+        continue;
+      }
+      EOObject* stmt_obj = GetStmtEOObject(stmt);
+      res->nested.push_back(stmt_obj);
+      #ifdef TRACEOUT_EO
+        TraceOutEOObject(*stmt_obj);
+      #endif
+    }
+  }
+  res->nested.push_back(new EOObject{"TRUE", EOObjectType::EO_LITERAL});
   #ifdef TRACEOUT_EO
     TraceOutEOObject(*res);
   #endif
@@ -322,6 +325,8 @@ EOObject* GetCompoundAssignEOObject(const CompoundAssignOperator *p_operator) {
     operation = "shift-left";
   } else if (op_code == BinaryOperatorKind::BO_ShrAssign) {
     operation = "shift-right";
+  } else {
+    operation = "unknown_compaund_statement";
   }
 
   EOObject* binop = new EOObject{operation};
@@ -390,7 +395,7 @@ EOObject* GetBinaryStmtEOObject(const BinaryOperator *p_operator) {
   } else if (opCode == BinaryOperatorKind::BO_GE) {
     operation = "geq";
   } else {
-    operation = "undefined";
+    operation = "unknown_binary_operation";
   }
 
   EOObject* binop = new EOObject{operation};
@@ -463,11 +468,8 @@ EOObject* GetUnaryStmtEOObject(const UnaryOperator *p_operator) {
     operation = "coawait";
     // Incorrect unary operator
   } else {
-    operation = "undefined";
+    operation = "unknown_unary_operation";
   }
-
-  //! Тестовый вывод бинарного оператора, совмещенного с присваиванием
-  std::cout << "  Unary operator = " << operation << "\n";
 
   EOObject* unoop = new EOObject{operation};
   unoop->nested.push_back(GetStmtEOObject(p_operator->getSubExpr()));
@@ -564,8 +566,9 @@ EOObject* GetDoWhileStmtEOObject(const DoStmt *p_stmt) {
   return do_stmt;
 }
 
+extern ASTContext *context;
+
 std::string GetTypeName(QualType qualType) {
-  extern ASTContext *context;
   const clang::Type *typePtr = qualType.getTypePtr();
   TypeInfo typeInfo = context->getTypeInfo(typePtr);
   uint64_t typeSize = typeInfo.Width;

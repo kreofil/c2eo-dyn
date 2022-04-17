@@ -45,14 +45,9 @@ class MemoryManager {
 public:
   explicit MemoryManager(std::string name) : pointer(0), name(std::move(name)) {}
 
-  Variable Add(const clang::VarDecl *id,
-               size_t size,
-               const std::string &type,
-               std::string alias,
-               std::string value,
-               std::string local_name = "",
-               size_t shift = 0,
-               bool is_initialized = true);
+  Variable Add(const clang::VarDecl *id, size_t size, const std::string &type,
+               std::string alias, std::string value, std::string local_name = "",
+               size_t shift = 0, bool is_initialized = true);
 
   bool Empty();
 

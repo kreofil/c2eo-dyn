@@ -7,20 +7,16 @@ using namespace std;
 using namespace clang;
 
 
-Variable MemoryManager::Add(const VarDecl *id,
-                            size_t size,
-                            const std::string &type,
-                            std::string alias,
-                            std::string value,
-                            std::string local_name,
-                            size_t shift,
-                            bool is_initialized) {
-
-  Variable var = {id, pointer, size, type, std::move(alias), std::move(value),
-                  std::move(local_name), shift, type.substr(2), is_initialized};
+Variable MemoryManager::Add(const VarDecl *id, size_t size, const std::string &type,
+                            std::string alias, std::string value, std::string local_name,
+                            size_t shift, bool is_initialized)
+{
+  Variable var{id, pointer, size, type, std::move(alias), std::move(value),
+               std::move(local_name), shift, type.substr(2), is_initialized};
   // TODO fix this plug
-  if (var.value.empty())
+  if (var.value.empty()) {
     var.value = "plug";
+  }
   variables.push_back(var);
   pointer += size;
   return var;
@@ -58,7 +54,7 @@ EOObject* MemoryManager::GetEOObject() const
 {
   EOObject* res = new EOObject{"ram"};
   res->postfix = name;
-  res->nested.emplace_back(new EOObject{to_string(mem_size), EOObjectType::EO_LITERAL});
+  res->nested.push_back(new EOObject{to_string(mem_size), EOObjectType::EO_LITERAL});
   return res;
 }
 

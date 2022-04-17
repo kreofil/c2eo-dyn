@@ -1,9 +1,46 @@
 #include "eo_object.h"
 #include "util.h"
+#include "tracer.h"
 
 using namespace std;
 
 int EOObject::indent = 0;
+
+EOObject::EOObject(EOObjectType type) : type(type) {
+//   nested.reserve(10000);
+  #ifdef TRACEOUT_NEW_EO
+    std::cout << *this; // << "\n";
+  #endif
+}
+
+// Create simple complete Object
+EOObject::EOObject(std::string name) :
+    name(std::move(name)),
+    type(EOObjectType::EO_COMPLETE) {
+//   nested.reserve(10000);
+  #ifdef TRACEOUT_NEW_EO
+    std::cout << *this; // << "\n";
+  #endif
+}
+
+// Create simple object, may be used for literal
+EOObject::EOObject(std::string name, EOObjectType type) : name(std::move(name)), type(type) {
+//   nested.reserve(10000);
+  #ifdef TRACEOUT_NEW_EO
+    std::cout << *this; // << "\n";
+  #endif
+}
+
+// create complete name with body
+EOObject::EOObject(std::string name, std::string postfix) :
+    name(std::move(name)),
+    postfix(std::move(postfix)),
+    type(EOObjectType::EO_COMPLETE) {
+//   nested.reserve(10000);
+  #ifdef TRACEOUT_NEW_EO
+    std::cout << *this; // << "\n";
+  #endif
+}
 
 void EOObject::AddNested(EOObject* obj)
 {
@@ -25,6 +62,7 @@ std::ostream &operator<<(ostream &os, const EOObject &obj) {
     for (const auto child: obj.nested) {
       os << *child;
     }
+    os.flush();
     return os;
   }
 
@@ -32,6 +70,7 @@ std::ostream &operator<<(ostream &os, const EOObject &obj) {
 
   if (obj.type == EOObjectType::EO_PLUG) {
     os << "plug" << "\n";
+    os.flush();
     return os;
   }
 
@@ -54,6 +93,7 @@ std::ostream &operator<<(ostream &os, const EOObject &obj) {
     }
     EOObject::indent--;
   }
+  os.flush();
   return os;
 }
 
